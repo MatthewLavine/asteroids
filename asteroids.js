@@ -29,11 +29,36 @@ export function spawnAsteroids() {
   }
 }
 
+const ASTEROID_RESPAWN_INTERVAL = 2.5; // seconds between spawns
+const ASTEROID_MAX_ON_SCREEN = ASTEROID_COUNT;
+let asteroidRespawnTimer = 0;
+
+export function spawnAsteroid() {
+  const size = randomBetween(ASTEROID_MIN_SIZE, ASTEROID_MAX_SIZE);
+  const angle = Math.random() * Math.PI * 2;
+  const speed = randomBetween(ASTEROID_MIN_SPEED, ASTEROID_MAX_SPEED);
+  state.asteroids.push({
+    x: randomBetween(0, state.canvas.width),
+    y: randomBetween(0, state.canvas.height),
+    velocityX: Math.sin(angle) * speed,
+    velocityY: -Math.cos(angle) * speed,
+    size,
+  });
+}
+
 export function updateAsteroids(delta) {
   for (const asteroid of state.asteroids) {
     asteroid.x += asteroid.velocityX * delta;
     asteroid.y += asteroid.velocityY * delta;
     wrapPosition(asteroid, state.canvas.width, state.canvas.height);
+  }
+  // Asteroid respawn logic
+  asteroidRespawnTimer += delta;
+  if (asteroidRespawnTimer >= ASTEROID_RESPAWN_INTERVAL) {
+    asteroidRespawnTimer = 0;
+    if (state.asteroids.length < ASTEROID_MAX_ON_SCREEN) {
+      spawnAsteroid();
+    }
   }
 }
 
