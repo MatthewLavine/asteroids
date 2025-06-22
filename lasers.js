@@ -1,10 +1,5 @@
 import { state } from "./state.js";
-import {
-  SHIP_SIZE,
-  LASER_SPEED,
-  LASER_RADIUS,
-  LASER_LIFESPAN,
-} from "./constants.js";
+import { SHIP_SIZE, LASER_SPEED, LASER_LIFESPAN } from "./constants.js";
 import { wrapPosition } from "./utils.js";
 
 export function shootLaser(now) {
