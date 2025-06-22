@@ -12,29 +12,30 @@ import { wrapPosition } from "./utils.js";
 /**
  * Updates the ship's position, velocity, and angle based on input and physics.
  * Keeps the angle within [0, 2π) and clamps speed to MAX_SPEED.
+ * @param {number} delta - Time elapsed since last frame in seconds
  */
-export function updateShip() {
+export function updateShip(delta) {
   const { ship, canvas } = state;
-  if (ship.turningLeft) ship.angle -= TURN_SPEED;
-  if (ship.turningRight) ship.angle += TURN_SPEED;
+  if (ship.turningLeft) ship.angle -= TURN_SPEED * delta;
+  if (ship.turningRight) ship.angle += TURN_SPEED * delta;
   ship.angle = (ship.angle + Math.PI * 2) % (Math.PI * 2);
   if (ship.accelerating) {
-    ship.velocityX += Math.sin(ship.angle) * ACCEL_AMOUNT;
-    ship.velocityY -= Math.cos(ship.angle) * ACCEL_AMOUNT;
+    ship.velocityX += Math.sin(ship.angle) * ACCEL_AMOUNT * delta;
+    ship.velocityY -= Math.cos(ship.angle) * ACCEL_AMOUNT * delta;
   }
   if (ship.braking) {
-    ship.velocityX *= BRAKING_FORCE;
-    ship.velocityY *= BRAKING_FORCE;
+    ship.velocityX *= 1 - BRAKING_FORCE * delta;
+    ship.velocityY *= 1 - BRAKING_FORCE * delta;
   }
-  ship.velocityX *= FRICTION;
-  ship.velocityY *= FRICTION;
+  ship.velocityX *= 1 - FRICTION * delta;
+  ship.velocityY *= 1 - FRICTION * delta;
   const speed = Math.hypot(ship.velocityX, ship.velocityY);
   if (speed > MAX_SPEED) {
     ship.velocityX = (ship.velocityX / speed) * MAX_SPEED;
     ship.velocityY = (ship.velocityY / speed) * MAX_SPEED;
   }
-  ship.x += ship.velocityX;
-  ship.y += ship.velocityY;
+  ship.x += ship.velocityX * delta;
+  ship.y += ship.velocityY * delta;
   wrapPosition(ship, canvas.width, canvas.height);
 }
 

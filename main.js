@@ -11,11 +11,16 @@ import {
 import { drawScore } from "./score.js";
 import { BULLET_INTERVAL } from "./constants.js";
 
+let lastFrameTime = null;
+
 function gameLoop(now) {
+  if (!lastFrameTime) lastFrameTime = now;
+  const delta = (now - lastFrameTime) / 1000; // seconds
+  lastFrameTime = now;
   const { ctx, canvas, ship, bullets, asteroids } = state;
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  updateShip();
+  updateShip(delta);
   if (
     state.shooting &&
     (!state.lastBulletTime || now - state.lastBulletTime > BULLET_INTERVAL)
@@ -23,8 +28,8 @@ function gameLoop(now) {
     shootBullet(now);
     state.lastBulletTime = now;
   }
-  updateBullets(now);
-  updateAsteroids();
+  updateBullets(now, delta);
+  updateAsteroids(delta);
   checkBulletAsteroidCollisions();
   drawScore(ctx, state.score);
   drawAsteroids(ctx, asteroids);

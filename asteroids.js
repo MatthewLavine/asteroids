@@ -29,10 +29,10 @@ export function spawnAsteroids() {
   }
 }
 
-export function updateAsteroids() {
+export function updateAsteroids(delta) {
   for (const asteroid of state.asteroids) {
-    asteroid.x += asteroid.velocityX;
-    asteroid.y += asteroid.velocityY;
+    asteroid.x += asteroid.velocityX * delta;
+    asteroid.y += asteroid.velocityY * delta;
     wrapPosition(asteroid, state.canvas.width, state.canvas.height);
   }
 }

@@ -20,12 +20,12 @@ export function shootBullet(now) {
   });
 }
 
-export function updateBullets(now) {
+export function updateBullets(now, delta) {
   const { bullets, canvas } = state;
   for (let i = bullets.length - 1; i >= 0; i--) {
     const b = bullets[i];
-    b.x += b.vx;
-    b.y += b.vy;
+    b.x += b.vx * delta;
+    b.y += b.vy * delta;
     wrapPosition(b, canvas.width, canvas.height);
     if (now - b.createdAt > BULLET_LIFESPAN) {
       bullets.splice(i, 1);
