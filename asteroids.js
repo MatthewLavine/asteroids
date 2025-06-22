@@ -22,8 +22,8 @@ export function spawnAsteroids() {
     state.asteroids.push({
       x: randomBetween(0, state.canvas.width),
       y: randomBetween(0, state.canvas.height),
-      velocityX: Math.sin(angle) * speed, // renamed from vx
-      velocityY: -Math.cos(angle) * speed, // renamed from vy
+      velocityX: Math.sin(angle) * speed,
+      velocityY: -Math.cos(angle) * speed,
       size,
     });
   }
@@ -31,8 +31,8 @@ export function spawnAsteroids() {
 
 export function updateAsteroids() {
   for (const asteroid of state.asteroids) {
-    asteroid.x += asteroid.velocityX; // renamed from vx
-    asteroid.y += asteroid.velocityY; // renamed from vy
+    asteroid.x += asteroid.velocityX;
+    asteroid.y += asteroid.velocityY;
     wrapPosition(asteroid, state.canvas.width, state.canvas.height);
   }
 }
