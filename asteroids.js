@@ -6,6 +6,7 @@ import {
   ASTEROID_MAX_SPEED,
   ASTEROID_COUNT,
   LASER_RADIUS,
+  SHIP_SIZE,
 } from "./constants.js";
 import { wrapPosition } from "./utils.js";
 import { playSound } from "./sound.js";
@@ -31,13 +32,24 @@ function generateAsteroidShape(size) {
 
 export function spawnAsteroids() {
   state.asteroids = [];
+  const SAFE_RADIUS = SHIP_SIZE / 2 + ASTEROID_MAX_SIZE + 40; // Add buffer
   for (let i = 0; i < ASTEROID_COUNT; i++) {
     const size = randomBetween(ASTEROID_MIN_SIZE, ASTEROID_MAX_SIZE);
     const angle = Math.random() * Math.PI * 2;
     const speed = randomBetween(ASTEROID_MIN_SPEED, ASTEROID_MAX_SPEED);
+    let x,
+      y,
+      attempts = 0;
+    do {
+      x = randomBetween(0, state.canvas.width);
+      y = randomBetween(0, state.canvas.height);
+      attempts++;
+      // Avoid infinite loop in rare cases
+      if (attempts > 100) break;
+    } while (distance(x, y, state.ship.x, state.ship.y) < SAFE_RADIUS);
     state.asteroids.push({
-      x: randomBetween(0, state.canvas.width),
-      y: randomBetween(0, state.canvas.height),
+      x,
+      y,
       velocityX: Math.sin(angle) * speed,
       velocityY: -Math.cos(angle) * speed,
       size,
@@ -48,17 +60,33 @@ export function spawnAsteroids() {
   }
 }
 
+function distance(x1, y1, x2, y2) {
+  const dx = x1 - x2;
+  const dy = y1 - y2;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
 const ASTEROID_RESPAWN_INTERVAL = 2.5; // seconds between spawns
 const ASTEROID_MAX_ON_SCREEN = ASTEROID_COUNT;
 let asteroidRespawnTimer = 0;
 
 export function spawnAsteroid() {
+  const SAFE_RADIUS = SHIP_SIZE / 2 + ASTEROID_MAX_SIZE + 40; // Add buffer
   const size = randomBetween(ASTEROID_MIN_SIZE, ASTEROID_MAX_SIZE);
   const angle = Math.random() * Math.PI * 2;
   const speed = randomBetween(ASTEROID_MIN_SPEED, ASTEROID_MAX_SPEED);
+  let x,
+    y,
+    attempts = 0;
+  do {
+    x = randomBetween(0, state.canvas.width);
+    y = randomBetween(0, state.canvas.height);
+    attempts++;
+    if (attempts > 100) break;
+  } while (distance(x, y, state.ship.x, state.ship.y) < SAFE_RADIUS);
   state.asteroids.push({
-    x: randomBetween(0, state.canvas.width),
-    y: randomBetween(0, state.canvas.height),
+    x,
+    y,
     velocityX: Math.sin(angle) * speed,
     velocityY: -Math.cos(angle) * speed,
     size,
