@@ -11,6 +11,7 @@ import {
 import { drawScore } from "./score.js";
 import { LASER_INTERVAL } from "./constants.js";
 import { initStarfield, updateStarfield, drawStarfield } from "./starfield.js";
+import { setMuted } from "./sound.js";
 
 let lastFrameTime = null;
 
@@ -53,3 +54,35 @@ function startGame() {
 }
 
 document.addEventListener("DOMContentLoaded", startGame);
+
+window.addEventListener("DOMContentLoaded", () => {
+  const muteBtn = document.createElement("button");
+  muteBtn.textContent = "🔊";
+  muteBtn.style.position = "absolute";
+  muteBtn.style.top = "10px";
+  muteBtn.style.right = "10px";
+  muteBtn.style.zIndex = 10;
+  muteBtn.style.fontSize = "2rem";
+  muteBtn.style.background = "rgba(0,0,0,0.5)";
+  muteBtn.style.color = "white";
+  muteBtn.style.border = "none";
+  muteBtn.style.borderRadius = "8px";
+  muteBtn.style.cursor = "pointer";
+  muteBtn.setAttribute("aria-label", "Mute/Unmute sound");
+  muteBtn.setAttribute("tabindex", "0");
+  let muted = false;
+  muteBtn.addEventListener("click", (e) => {
+    muted = !muted;
+    setMuted(muted);
+    muteBtn.textContent = muted ? "🔇" : "🔊";
+    muteBtn.blur(); // Remove focus after click
+    e.preventDefault();
+  });
+  muteBtn.addEventListener("keydown", (e) => {
+    // Prevent space/enter from toggling when focused
+    if (e.code === "Space" || e.code === "Enter") {
+      e.preventDefault();
+    }
+  });
+  document.body.appendChild(muteBtn);
+});

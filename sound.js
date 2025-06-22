@@ -15,7 +15,14 @@ const sounds = {
       : null,
 };
 
+let muted = false;
+
+function setMuted(value) {
+  muted = value;
+}
+
 function playSound(name) {
+  if (muted) return;
   if (sounds[name]) {
     // Clone the audio to allow overlapping sounds
     const sound = sounds[name].cloneNode();
@@ -24,4 +31,4 @@ function playSound(name) {
   }
 }
 
-export { playSound };
+export { playSound, setMuted };
