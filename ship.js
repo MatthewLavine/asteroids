@@ -51,6 +51,8 @@ export function drawShip(ctx, ship) {
   ctx.lineTo(...right);
   ctx.lineTo(...left);
   ctx.closePath();
+  ctx.fillStyle = "#ccc";
+  ctx.fill();
   ctx.strokeStyle = "gray";
   ctx.lineWidth = 3;
   ctx.stroke();

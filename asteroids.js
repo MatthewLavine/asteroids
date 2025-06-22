@@ -39,12 +39,11 @@ export function updateAsteroids(delta) {
 
 export function drawAsteroids(ctx, asteroids) {
   ctx.save();
-  ctx.strokeStyle = "white";
-  ctx.lineWidth = 2;
+  ctx.fillStyle = "#888";
   for (const a of asteroids) {
     ctx.beginPath();
     ctx.arc(a.x, a.y, a.size / 2, 0, Math.PI * 2);
-    ctx.stroke();
+    ctx.fill();
   }
   ctx.restore();
 }
