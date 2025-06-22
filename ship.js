@@ -118,5 +118,26 @@ export function drawShip(ctx, ship) {
     ctx.strokeStyle = "red";
     ctx.stroke();
   }
+
+  // Braking effect: blue reverse thrusters
+  if (ship.braking) {
+    const brakeLeft = [-SHIP_SIZE * 0.25, -SHIP_SIZE * 0.7];
+    const brakeTip = [0, -SHIP_SIZE * 1.1];
+    const brakeRight = [SHIP_SIZE * 0.25, -SHIP_SIZE * 0.7];
+    ctx.beginPath();
+    ctx.moveTo(...brakeLeft);
+    ctx.lineTo(...brakeTip);
+    ctx.lineTo(...brakeRight);
+    ctx.closePath();
+    ctx.fillStyle = "#33aaff";
+    ctx.shadowColor = "#66ccff";
+    ctx.shadowBlur = 10;
+    ctx.globalAlpha = 0.8;
+    ctx.fill();
+    ctx.globalAlpha = 1.0;
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = "#66ccff";
+    ctx.stroke();
+  }
   ctx.restore();
 }
