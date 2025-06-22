@@ -1,5 +1,3 @@
-import { SHIP_SIZE } from "./constants.js";
-
 export const state = {
   ship: {
     x: 0,

@@ -5,6 +5,7 @@ import {
   ASTEROID_MIN_SPEED,
   ASTEROID_MAX_SPEED,
   ASTEROID_COUNT,
+  BULLET_RADIUS,
 } from "./constants.js";
 import { wrapPosition } from "./utils.js";
 
@@ -21,8 +22,8 @@ export function spawnAsteroids() {
     state.asteroids.push({
       x: randomBetween(0, state.canvas.width),
       y: randomBetween(0, state.canvas.height),
-      vx: Math.sin(angle) * speed,
-      vy: -Math.cos(angle) * speed,
+      velocityX: Math.sin(angle) * speed, // renamed from vx
+      velocityY: -Math.cos(angle) * speed, // renamed from vy
       size,
     });
   }
@@ -30,8 +31,8 @@ export function spawnAsteroids() {
 
 export function updateAsteroids() {
   for (const asteroid of state.asteroids) {
-    asteroid.x += asteroid.vx;
-    asteroid.y += asteroid.vy;
+    asteroid.x += asteroid.velocityX; // renamed from vx
+    asteroid.y += asteroid.velocityY; // renamed from vy
     wrapPosition(asteroid, state.canvas.width, state.canvas.height);
   }
 }
@@ -57,8 +58,7 @@ export function checkBulletAsteroidCollisions() {
       const dx = a.x - b.x;
       const dy = a.y - b.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < a.size / 2 + 4) {
-        // 4 is bullet radius
+      if (dist < a.size / 2 + BULLET_RADIUS) {
         asteroids.splice(i, 1);
         bullets.splice(j, 1);
         state.score += 1;
