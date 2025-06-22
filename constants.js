@@ -2,7 +2,7 @@ export const SHIP_SIZE = 40;
 // All speeds and accelerations are now in units per second
 export const ACCEL_AMOUNT = 400; // px/sec^2
 export const FRICTION = 0.1; // fraction of velocity lost per second
-export const BRAKING_FORCE = 0.99; // fraction of velocity lost per second
+export const BRAKING_FORCE = 2.0; // fraction of velocity lost per second
 export const MAX_SPEED = 500; // px/sec
 export const TURN_SPEED = 1.5 * Math.PI; // radians/sec
 export const LASER_SPEED = 600; // px/sec
