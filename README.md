@@ -1,5 +1,7 @@
 # Asteroids Clone
 
+[![Build Docker Image](https://github.com/MatthewLavine/asteroids/actions/workflows/docker-build.yml/badge.svg)](https://github.com/MatthewLavine/asteroids/actions/workflows/docker-build.yml)
+
 This repository contains a clone of the classic Asteroids game, created using an LLM (Large Language Model) to practice and explore GitHub Copilot's Agent mode. The project demonstrates how AI-assisted coding can be used to recreate classic games and improve development workflows.
 
 - Purpose: Practice with GitHub Copilot Agent mode
