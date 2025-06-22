@@ -119,25 +119,42 @@ export function drawShip(ctx, ship) {
     ctx.stroke();
   }
 
-  // Braking effect: blue reverse thrusters
+  // Braking effect: blue reverse thrusters on all three points
   if (ship.braking) {
-    const brakeLeft = [-SHIP_SIZE * 0.25, -SHIP_SIZE * 0.7];
-    const brakeTip = [0, -SHIP_SIZE * 1.1];
-    const brakeRight = [SHIP_SIZE * 0.25, -SHIP_SIZE * 0.7];
-    ctx.beginPath();
-    ctx.moveTo(...brakeLeft);
-    ctx.lineTo(...brakeTip);
-    ctx.lineTo(...brakeRight);
-    ctx.closePath();
-    ctx.fillStyle = "#33aaff";
-    ctx.shadowColor = "#66ccff";
-    ctx.shadowBlur = 10;
-    ctx.globalAlpha = 0.8;
-    ctx.fill();
-    ctx.globalAlpha = 1.0;
-    ctx.shadowBlur = 0;
-    ctx.strokeStyle = "#66ccff";
-    ctx.stroke();
+    // Helper to draw a braking cone at a given point and angle
+    function drawBrakingCone(x, y, angle) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      const brakeLeft = [-SHIP_SIZE * 0.18, 0];
+      const brakeTip = [0, -SHIP_SIZE * 0.35]; // Shorter cone
+      const brakeRight = [SHIP_SIZE * 0.18, 0];
+      ctx.beginPath();
+      ctx.moveTo(...brakeLeft);
+      ctx.lineTo(...brakeTip);
+      ctx.lineTo(...brakeRight);
+      ctx.closePath();
+      ctx.fillStyle = "#33aaff";
+      ctx.shadowColor = "#66ccff";
+      ctx.shadowBlur = 10;
+      ctx.globalAlpha = 0.8;
+      ctx.fill();
+      ctx.globalAlpha = 1.0;
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = "#66ccff";
+      ctx.stroke();
+      ctx.restore();
+    }
+    const nose = [0, -SHIP_SIZE];
+    const right = [SHIP_SIZE * 0.7, SHIP_SIZE * 0.7];
+    const left = [-SHIP_SIZE * 0.7, SHIP_SIZE * 0.7];
+    // Outward direction is from center (0,0) to each point
+    function angleFromCenter([x, y]) {
+      return Math.atan2(y, x) + Math.PI / 2;
+    }
+    drawBrakingCone(...nose, angleFromCenter(nose));
+    drawBrakingCone(...right, angleFromCenter(right));
+    drawBrakingCone(...left, angleFromCenter(left));
   }
   ctx.restore();
 }
