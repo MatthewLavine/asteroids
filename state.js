@@ -1,0 +1,22 @@
+import { SHIP_SIZE } from "./constants.js";
+
+export const state = {
+  ship: {
+    x: 0,
+    y: 0,
+    angle: 0,
+    velocityX: 0,
+    velocityY: 0,
+    turningLeft: false,
+    turningRight: false,
+    accelerating: false,
+    braking: false,
+  },
+  bullets: [],
+  shooting: false,
+  lastBulletTime: 0,
+  score: 0,
+  ctx: null,
+  canvas: null,
+  asteroids: [],
+};
