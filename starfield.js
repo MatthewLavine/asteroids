@@ -2,6 +2,7 @@
 // Simple starfield background for the Asteroids game
 
 import { state } from "./state.js";
+import { wrapPosition } from "./utils.js";
 
 const STAR_COUNT = 100;
 const STAR_MIN_RADIUS = 0.5;
@@ -31,8 +32,9 @@ export function updateStarfield(delta) {
   const { stars, canvas } = state;
   for (const star of stars) {
     star.y += star.speed * delta;
-    if (star.y > canvas.height) {
-      star.y = 0;
+    wrapPosition(star, canvas.width, canvas.height);
+    if (star.y < 0.5) {
+      // If a star wraps to the top, randomize its x for a more natural look
       star.x = Math.random() * canvas.width;
     }
   }
