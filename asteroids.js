@@ -5,7 +5,7 @@ import {
   ASTEROID_MIN_SPEED,
   ASTEROID_MAX_SPEED,
   ASTEROID_COUNT,
-  BULLET_RADIUS,
+  LASER_RADIUS,
 } from "./constants.js";
 import { wrapPosition } from "./utils.js";
 
@@ -48,18 +48,18 @@ export function drawAsteroids(ctx, asteroids) {
   ctx.restore();
 }
 
-export function checkBulletAsteroidCollisions() {
-  const { bullets, asteroids } = state;
+export function checkLaserAsteroidCollisions() {
+  const { lasers, asteroids } = state;
   for (let i = asteroids.length - 1; i >= 0; i--) {
     const a = asteroids[i];
-    for (let j = bullets.length - 1; j >= 0; j--) {
-      const b = bullets[j];
-      const dx = a.x - b.x;
-      const dy = a.y - b.y;
+    for (let j = lasers.length - 1; j >= 0; j--) {
+      const l = lasers[j];
+      const dx = a.x - l.x;
+      const dy = a.y - l.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < a.size / 2 + BULLET_RADIUS) {
+      if (dist < a.size / 2 + LASER_RADIUS) {
         asteroids.splice(i, 1);
-        bullets.splice(j, 1);
+        lasers.splice(j, 1);
         state.score += 1;
         break;
       }

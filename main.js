@@ -1,15 +1,15 @@
 import { state } from "./state.js";
 import { setupInput } from "./input.js";
 import { updateShip, drawShip } from "./ship.js";
-import { shootBullet, updateBullets, drawBullets } from "./bullets.js";
+import { shootLaser, updateLasers, drawLasers } from "./lasers.js";
 import {
   drawAsteroids,
   updateAsteroids,
   spawnAsteroids,
-  checkBulletAsteroidCollisions,
+  checkLaserAsteroidCollisions,
 } from "./asteroids.js";
 import { drawScore } from "./score.js";
-import { BULLET_INTERVAL } from "./constants.js";
+import { LASER_INTERVAL } from "./constants.js";
 import { initStarfield, updateStarfield, drawStarfield } from "./starfield.js";
 
 let lastFrameTime = null;
@@ -18,7 +18,7 @@ function gameLoop(now) {
   if (!lastFrameTime) lastFrameTime = now;
   const delta = (now - lastFrameTime) / 1000; // seconds
   lastFrameTime = now;
-  const { ctx, canvas, ship, bullets, asteroids } = state;
+  const { ctx, canvas, ship, lasers, asteroids } = state;
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   updateStarfield(delta);
@@ -26,17 +26,17 @@ function gameLoop(now) {
   updateShip(delta);
   if (
     state.shooting &&
-    (!state.lastBulletTime || now - state.lastBulletTime > BULLET_INTERVAL)
+    (!state.lastBulletTime || now - state.lastBulletTime > LASER_INTERVAL)
   ) {
-    shootBullet(now);
+    shootLaser(now);
     state.lastBulletTime = now;
   }
-  updateBullets(now, delta);
+  updateLasers(now, delta);
   updateAsteroids(delta);
-  checkBulletAsteroidCollisions();
+  checkLaserAsteroidCollisions();
   drawScore(ctx, state.score);
   drawAsteroids(ctx, asteroids);
-  drawBullets(ctx, bullets);
+  drawLasers(ctx, lasers);
   drawShip(ctx, ship);
   requestAnimationFrame(gameLoop);
 }

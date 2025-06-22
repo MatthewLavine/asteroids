@@ -10,7 +10,7 @@ export const state = {
     accelerating: false,
     braking: false,
   },
-  bullets: [],
+  lasers: [],
   shooting: false,
   lastBulletTime: 0,
   score: 0,
