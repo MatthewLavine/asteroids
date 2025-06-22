@@ -13,6 +13,21 @@ function randomBetween(a, b) {
   return Math.random() * (b - a) + a;
 }
 
+function generateAsteroidShape(size) {
+  // Generate a random, jagged polygon for a rocky look
+  const points = [];
+  const numPoints = Math.floor(Math.random() * 6) + 8; // 8-13 points
+  for (let i = 0; i < numPoints; i++) {
+    const angle = (i / numPoints) * Math.PI * 2;
+    const radius = (size / 2) * (0.7 + Math.random() * 0.5); // 70%-120% of base radius
+    points.push({
+      x: Math.cos(angle) * radius,
+      y: Math.sin(angle) * radius,
+    });
+  }
+  return points;
+}
+
 export function spawnAsteroids() {
   state.asteroids = [];
   for (let i = 0; i < ASTEROID_COUNT; i++) {
@@ -25,6 +40,9 @@ export function spawnAsteroids() {
       velocityX: Math.sin(angle) * speed,
       velocityY: -Math.cos(angle) * speed,
       size,
+      shape: generateAsteroidShape(size),
+      rotation: Math.random() * Math.PI * 2,
+      rotationSpeed: (Math.random() - 0.5) * 0.6, // -0.3 to 0.3 rad/sec
     });
   }
 }
@@ -43,6 +61,9 @@ export function spawnAsteroid() {
     velocityX: Math.sin(angle) * speed,
     velocityY: -Math.cos(angle) * speed,
     size,
+    shape: generateAsteroidShape(size),
+    rotation: Math.random() * Math.PI * 2,
+    rotationSpeed: (Math.random() - 0.5) * 0.6, // -0.3 to 0.3 rad/sec
   });
 }
 
@@ -50,6 +71,7 @@ export function updateAsteroids(delta) {
   for (const asteroid of state.asteroids) {
     asteroid.x += asteroid.velocityX * delta;
     asteroid.y += asteroid.velocityY * delta;
+    asteroid.rotation += asteroid.rotationSpeed * delta;
     wrapPosition(asteroid, state.canvas.width, state.canvas.height);
   }
   // Asteroid respawn logic
@@ -64,11 +86,35 @@ export function updateAsteroids(delta) {
 
 export function drawAsteroids(ctx, asteroids) {
   ctx.save();
-  ctx.fillStyle = "#888";
   for (const a of asteroids) {
+    ctx.save();
+    ctx.translate(a.x, a.y);
+    ctx.rotate(a.rotation || 0);
+    // Shading gradient
+    const grad = ctx.createRadialGradient(
+      0,
+      0,
+      a.size * 0.2,
+      0,
+      0,
+      a.size * 0.6
+    );
+    grad.addColorStop(0, "#e0e0e0");
+    grad.addColorStop(0.5, "#888888");
+    grad.addColorStop(1, "#444444");
+    ctx.fillStyle = grad;
     ctx.beginPath();
-    ctx.arc(a.x, a.y, a.size / 2, 0, Math.PI * 2);
+    const shape = a.shape || generateAsteroidShape(a.size);
+    ctx.moveTo(shape[0].x, shape[0].y);
+    for (let i = 1; i < shape.length; i++) {
+      ctx.lineTo(shape[i].x, shape[i].y);
+    }
+    ctx.closePath();
     ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#bbbbbb";
+    ctx.stroke();
+    ctx.restore();
   }
   ctx.restore();
 }

@@ -46,19 +46,64 @@ export function drawShip(ctx, ship) {
   const nose = [0, -SHIP_SIZE];
   const right = [SHIP_SIZE * 0.7, SHIP_SIZE * 0.7];
   const left = [-SHIP_SIZE * 0.7, SHIP_SIZE * 0.7];
+
+  // Main body
   ctx.beginPath();
   ctx.moveTo(...nose);
   ctx.lineTo(...right);
   ctx.lineTo(...left);
   ctx.closePath();
-  ctx.fillStyle = "#ccc";
+  // Gradient for metallic look
+  const grad = ctx.createLinearGradient(0, -SHIP_SIZE, 0, SHIP_SIZE * 0.7);
+  grad.addColorStop(0, "#e0e0ff");
+  grad.addColorStop(0.5, "#8888aa");
+  grad.addColorStop(1, "#222244");
+  ctx.fillStyle = grad;
   ctx.fill();
-  ctx.strokeStyle = "gray";
+  ctx.strokeStyle = "#66ccff";
   ctx.lineWidth = 3;
   ctx.stroke();
+
+  // Cockpit
+  ctx.beginPath();
+  ctx.ellipse(
+    0,
+    -SHIP_SIZE * 0.5,
+    SHIP_SIZE * 0.18,
+    SHIP_SIZE * 0.28,
+    0,
+    0,
+    Math.PI * 2
+  );
+  ctx.fillStyle = "#66ccff";
+  ctx.globalAlpha = 0.7;
+  ctx.fill();
+  ctx.globalAlpha = 1.0;
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+
+  // Accents (side fins)
+  ctx.beginPath();
+  ctx.moveTo(-SHIP_SIZE * 0.7, SHIP_SIZE * 0.7);
+  ctx.lineTo(-SHIP_SIZE * 0.5, SHIP_SIZE * 0.3);
+  ctx.lineTo(-SHIP_SIZE * 0.3, SHIP_SIZE * 0.7);
+  ctx.closePath();
+  ctx.fillStyle = "#ff3366";
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(SHIP_SIZE * 0.7, SHIP_SIZE * 0.7);
+  ctx.lineTo(SHIP_SIZE * 0.5, SHIP_SIZE * 0.3);
+  ctx.lineTo(SHIP_SIZE * 0.3, SHIP_SIZE * 0.7);
+  ctx.closePath();
+  ctx.fillStyle = "#33ffd7";
+  ctx.fill();
+
+  // Flame
   if (ship.accelerating) {
     const flameLeft = [-SHIP_SIZE * 0.4, SHIP_SIZE * 0.7];
-    const flameTip = [0, SHIP_SIZE * 1.2];
+    const flameTip = [0, SHIP_SIZE * 1.3];
     const flameRight = [SHIP_SIZE * 0.4, SHIP_SIZE * 0.7];
     ctx.beginPath();
     ctx.moveTo(...flameLeft);
@@ -66,7 +111,10 @@ export function drawShip(ctx, ship) {
     ctx.lineTo(...flameRight);
     ctx.closePath();
     ctx.fillStyle = "orange";
+    ctx.shadowColor = "#ffcc00";
+    ctx.shadowBlur = 12;
     ctx.fill();
+    ctx.shadowBlur = 0;
     ctx.strokeStyle = "red";
     ctx.stroke();
   }
