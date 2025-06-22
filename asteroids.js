@@ -8,6 +8,7 @@ import {
   LASER_RADIUS,
 } from "./constants.js";
 import { wrapPosition } from "./utils.js";
+import { playSound } from "./sound.js";
 
 function randomBetween(a, b) {
   return Math.random() * (b - a) + a;
@@ -132,6 +133,7 @@ export function checkLaserAsteroidCollisions() {
         asteroids.splice(i, 1);
         lasers.splice(j, 1);
         state.score += 1;
+        playSound("explosion");
         break;
       }
     }

@@ -1,6 +1,7 @@
 import { state } from "./state.js";
 import { SHIP_SIZE, LASER_SPEED, LASER_LIFESPAN } from "./constants.js";
 import { wrapPosition } from "./utils.js";
+import { playSound } from "./sound.js";
 
 export function shootLaser(now) {
   const { ship, lasers } = state;
@@ -14,6 +15,7 @@ export function shootLaser(now) {
     angle: ship.angle, // store angle for laser direction
     createdAt: now,
   });
+  playSound("laser1");
 }
 
 export function updateLasers(now, delta) {
