@@ -7,6 +7,7 @@ import {
   updateAsteroids,
   spawnAsteroids,
   checkLaserAsteroidCollisions,
+  checkShipAsteroidCollision,
 } from "./asteroids.js";
 import { drawScore } from "./score.js";
 import { LASER_INTERVAL } from "./constants.js";
@@ -14,6 +15,56 @@ import { initStarfield, updateStarfield, drawStarfield } from "./starfield.js";
 import { setMuted } from "./sound.js";
 
 let lastFrameTime = null;
+
+// Make collision check available globally for the game loop
+window.checkShipAsteroidCollision = checkShipAsteroidCollision;
+
+function showNewGameButton() {
+  let btn = document.getElementById("newGameBtn");
+  if (!btn) {
+    btn = document.createElement("button");
+    btn.id = "newGameBtn";
+    btn.textContent = "New Game";
+    btn.style.position = "absolute";
+    btn.style.left = "50%";
+    btn.style.top = "60%";
+    btn.style.transform = "translate(-50%, -50%)";
+    btn.style.fontSize = "2rem";
+    btn.style.padding = "0.5em 2em";
+    btn.style.background = "#222";
+    btn.style.color = "#fff";
+    btn.style.border = "2px solid #fff";
+    btn.style.borderRadius = "10px";
+    btn.style.cursor = "pointer";
+    btn.style.zIndex = 20;
+    btn.addEventListener("click", () => {
+      btn.remove();
+      resetGame();
+    });
+    document.body.appendChild(btn);
+  }
+}
+
+function resetGame() {
+  state.score = 0;
+  state.ship.x = state.canvas.width / 2;
+  state.ship.y = state.canvas.height / 2;
+  state.ship.angle = 0;
+  state.ship.velocityX = 0;
+  state.ship.velocityY = 0;
+  state.ship.turningLeft = false;
+  state.ship.turningRight = false;
+  state.ship.accelerating = false;
+  state.ship.braking = false;
+  state.lasers = [];
+  state.asteroids = [];
+  state.shooting = false;
+  state.lastBulletTime = 0;
+  state.gameOver = false;
+  spawnAsteroids();
+  lastFrameTime = null;
+  requestAnimationFrame(gameLoop);
+}
 
 function gameLoop(now) {
   if (!lastFrameTime) lastFrameTime = now;
@@ -35,6 +86,30 @@ function gameLoop(now) {
   updateLasers(now, delta);
   updateAsteroids(delta);
   checkLaserAsteroidCollisions();
+  // Check for ship-asteroid collision
+  if (
+    window.checkShipAsteroidCollision &&
+    window.checkShipAsteroidCollision()
+  ) {
+    drawScore(ctx, state.score);
+    drawAsteroids(ctx, asteroids);
+    drawLasers(ctx, lasers);
+    drawShip(ctx, ship);
+    // Dim the screen
+    ctx.save();
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1.0;
+    // Draw GAME OVER text
+    ctx.font = "bold 64px sans-serif";
+    ctx.fillStyle = "red";
+    ctx.textAlign = "center";
+    ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+    ctx.restore();
+    showNewGameButton();
+    return; // Stop the game loop
+  }
   drawScore(ctx, state.score);
   drawAsteroids(ctx, asteroids);
   drawLasers(ctx, lasers);

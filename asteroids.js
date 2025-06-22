@@ -167,3 +167,19 @@ export function checkLaserAsteroidCollisions() {
     }
   }
 }
+
+export function checkShipAsteroidCollision() {
+  const { ship, asteroids } = state;
+  for (let i = 0; i < asteroids.length; i++) {
+    const a = asteroids[i];
+    const dx = a.x - ship.x;
+    const dy = a.y - ship.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < a.size / 2 + SHIP_SIZE / 2) {
+      state.gameOver = true;
+      playSound("explosion");
+      return true;
+    }
+  }
+  return false;
+}

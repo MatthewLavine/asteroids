@@ -17,4 +17,5 @@ export const state = {
   ctx: null,
   canvas: null,
   asteroids: [],
+  gameOver: false, // Track game over state
 };
