@@ -10,6 +10,7 @@ import {
 } from "./asteroids.js";
 import { drawScore } from "./score.js";
 import { BULLET_INTERVAL } from "./constants.js";
+import { initStarfield, updateStarfield, drawStarfield } from "./starfield.js";
 
 let lastFrameTime = null;
 
@@ -20,6 +21,8 @@ function gameLoop(now) {
   const { ctx, canvas, ship, bullets, asteroids } = state;
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  updateStarfield(delta);
+  drawStarfield(ctx);
   updateShip(delta);
   if (
     state.shooting &&
@@ -45,6 +48,7 @@ function startGame() {
   state.ship.y = state.canvas.height / 2;
   spawnAsteroids();
   setupInput();
+  initStarfield();
   requestAnimationFrame(gameLoop);
 }
 
