@@ -66,6 +66,31 @@ function resetGame() {
   requestAnimationFrame(gameLoop);
 }
 
+function drawGameOverScreen() {
+  const { ctx, canvas, ship, lasers, asteroids } = state;
+  // Draw background and starfield
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  if (typeof drawStarfield === "function") {
+    drawStarfield(ctx);
+  }
+  drawScore(ctx, state.score);
+  drawAsteroids(ctx, asteroids);
+  drawLasers(ctx, lasers);
+  drawShip(ctx, ship);
+  ctx.save();
+  ctx.globalAlpha = 0.5;
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.globalAlpha = 1.0;
+  ctx.font = "bold 64px sans-serif";
+  ctx.fillStyle = "red";
+  ctx.textAlign = "center";
+  ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+  ctx.restore();
+  showNewGameButton();
+}
+
 function gameLoop(now) {
   if (!lastFrameTime) lastFrameTime = now;
   const delta = (now - lastFrameTime) / 1000; // seconds
@@ -91,23 +116,7 @@ function gameLoop(now) {
     window.checkShipAsteroidCollision &&
     window.checkShipAsteroidCollision()
   ) {
-    drawScore(ctx, state.score);
-    drawAsteroids(ctx, asteroids);
-    drawLasers(ctx, lasers);
-    drawShip(ctx, ship);
-    // Dim the screen
-    ctx.save();
-    ctx.globalAlpha = 0.5;
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.globalAlpha = 1.0;
-    // Draw GAME OVER text
-    ctx.font = "bold 64px sans-serif";
-    ctx.fillStyle = "red";
-    ctx.textAlign = "center";
-    ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
-    ctx.restore();
-    showNewGameButton();
+    drawGameOverScreen();
     return; // Stop the game loop
   }
   drawScore(ctx, state.score);
@@ -128,7 +137,26 @@ function startGame() {
   requestAnimationFrame(gameLoop);
 }
 
+function handleResize() {
+  const canvas = document.getElementById("gameCanvas");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  if (state.canvas !== canvas) {
+    state.canvas = canvas;
+    state.ctx = canvas.getContext("2d");
+  }
+  if (state.stars) {
+    // Reinitialize starfield for new size
+    initStarfield();
+  }
+  if (state.gameOver) {
+    // Redraw game over overlay
+    drawGameOverScreen();
+  }
+}
+
 document.addEventListener("DOMContentLoaded", startGame);
+window.addEventListener("resize", handleResize);
 
 window.addEventListener("DOMContentLoaded", () => {
   const muteBtn = document.createElement("button");
