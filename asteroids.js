@@ -158,6 +158,24 @@ export function checkLaserAsteroidCollisions() {
       const dy = a.y - l.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < a.size / 2 + LASER_RADIUS) {
+        // Split asteroid if large enough
+        if (a.size > ASTEROID_MIN_SIZE * 1.5) {
+          for (let s = 0; s < 2; s++) {
+            const newSize = a.size / 2;
+            const angle = Math.random() * Math.PI * 2;
+            const speed = randomBetween(ASTEROID_MIN_SPEED, ASTEROID_MAX_SPEED);
+            asteroids.push({
+              x: a.x,
+              y: a.y,
+              velocityX: Math.sin(angle) * speed,
+              velocityY: -Math.cos(angle) * speed,
+              size: newSize,
+              shape: generateAsteroidShape(newSize),
+              rotation: Math.random() * Math.PI * 2,
+              rotationSpeed: (Math.random() - 0.5) * 0.6,
+            });
+          }
+        }
         asteroids.splice(i, 1);
         lasers.splice(j, 1);
         state.score += 1;
