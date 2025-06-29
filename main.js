@@ -89,6 +89,19 @@ function drawGameOverScreen() {
   ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
   ctx.restore();
   showNewGameButton();
+  // Listen for spacebar to restart
+  if (!window._gameOverSpaceListener) {
+    window._gameOverSpaceListener = function (e) {
+      if (state.gameOver && (e.code === "Space" || e.key === " ")) {
+        const btn = document.getElementById("newGameBtn");
+        if (btn) btn.remove();
+        resetGame();
+        window.removeEventListener("keydown", window._gameOverSpaceListener);
+        window._gameOverSpaceListener = null;
+      }
+    };
+    window.addEventListener("keydown", window._gameOverSpaceListener);
+  }
 }
 
 function gameLoop(now) {
