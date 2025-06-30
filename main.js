@@ -19,7 +19,7 @@ let lastFrameTime = null;
 // Make collision check available globally for the game loop
 window.checkShipAsteroidCollision = checkShipAsteroidCollision;
 
-function showNewGameButton() {
+function showNewGameButton(y) {
   let btn = document.getElementById("newGameBtn");
   if (!btn) {
     btn = document.createElement("button");
@@ -27,7 +27,6 @@ function showNewGameButton() {
     btn.textContent = "New Game";
     btn.style.position = "absolute";
     btn.style.left = "50%";
-    btn.style.top = "60%";
     btn.style.transform = "translate(-50%, -50%)";
     btn.style.fontSize = "2rem";
     btn.style.padding = "0.5em 2em";
@@ -42,6 +41,11 @@ function showNewGameButton() {
       resetGame();
     });
     document.body.appendChild(btn);
+  }
+  if (typeof y === "number") {
+    btn.style.top = `${y}px`;
+  } else {
+    btn.style.top = "60%";
   }
 }
 
@@ -83,12 +87,43 @@ function drawGameOverScreen() {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.globalAlpha = 1.0;
+  // Calculate vertical positions for even spacing
+  const centerY = canvas.height / 2;
+  const spacing = 140;
+  const topScoreY = centerY - spacing;
+  const gameOverY = centerY;
+  const newGameBtnY = centerY + spacing;
+
+  // Show top score above GAME OVER
+  let topScore = 0;
+  try {
+    if (typeof window !== "undefined" && window.localStorage) {
+      topScore =
+        parseInt(window.localStorage.getItem("asteroidsTopScore")) || 0;
+    }
+  } catch {
+    // ignore
+  }
+  if (state.score > topScore) {
+    topScore = state.score;
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.setItem("asteroidsTopScore", topScore);
+      }
+    } catch {
+      // ignore
+    }
+  }
+  ctx.font = "bold 32px sans-serif";
+  ctx.fillStyle = "#fff";
+  ctx.textAlign = "center";
+  ctx.fillText(`Top Score: ${topScore}`, canvas.width / 2, topScoreY);
   ctx.font = "bold 64px sans-serif";
   ctx.fillStyle = "red";
   ctx.textAlign = "center";
-  ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+  ctx.fillText("GAME OVER", canvas.width / 2, gameOverY);
   ctx.restore();
-  showNewGameButton();
+  showNewGameButton(newGameBtnY);
   // Listen for spacebar to restart
   if (!window._gameOverSpaceListener) {
     window._gameOverSpaceListener = function (e) {
