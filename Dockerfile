@@ -2,6 +2,7 @@ FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
 COPY index.html .
 COPY *.js .
+COPY *.ts .
 COPY *.css .
 COPY sounds/ sounds/
 EXPOSE 80
