@@ -1,4 +1,6 @@
-export const state = {
+import { GameState } from "./types.js";
+
+export const state: GameState = {
   ship: {
     x: 0,
     y: 0,

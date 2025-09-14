@@ -1,8 +1,9 @@
 import { state } from "./state.js";
+import { KeyCode } from "./types.js";
 
-export function setupInput() {
-  document.addEventListener("keydown", (e) => {
-    switch (e.code) {
+export function setupInput(): void {
+  document.addEventListener("keydown", (e: KeyboardEvent) => {
+    switch (e.code as KeyCode) {
       case "ArrowUp":
         state.ship.accelerating = true;
         break;
@@ -21,8 +22,8 @@ export function setupInput() {
     }
   });
 
-  document.addEventListener("keyup", (e) => {
-    switch (e.code) {
+  document.addEventListener("keyup", (e: KeyboardEvent) => {
+    switch (e.code as KeyCode) {
       case "ArrowUp":
         state.ship.accelerating = false;
         break;

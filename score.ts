@@ -1,4 +1,4 @@
-export function drawScore(ctx, score) {
+export function drawScore(ctx: CanvasRenderingContext2D, score: number): void {
   ctx.save();
   ctx.font = "28px Arial";
   ctx.fillStyle = "white";

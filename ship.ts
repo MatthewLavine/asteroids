@@ -8,14 +8,17 @@ import {
   MAX_SPEED,
 } from "./constants.js";
 import { wrapPosition } from "./utils.js";
+import { Ship } from "./types.js";
 
 /**
  * Updates the ship's position, velocity, and angle based on input and physics.
  * Keeps the angle within [0, 2π) and clamps speed to MAX_SPEED.
- * @param {number} delta - Time elapsed since last frame in seconds
+ * @param delta - Time elapsed since last frame in seconds
  */
-export function updateShip(delta) {
+export function updateShip(delta: number): void {
   const { ship, canvas } = state;
+  if (!canvas) return;
+  
   if (ship.turningLeft) ship.angle -= TURN_SPEED * delta;
   if (ship.turningRight) ship.angle += TURN_SPEED * delta;
   ship.angle = (ship.angle + Math.PI * 2) % (Math.PI * 2);
@@ -39,19 +42,19 @@ export function updateShip(delta) {
   wrapPosition(ship, canvas.width, canvas.height);
 }
 
-export function drawShip(ctx, ship) {
+export function drawShip(ctx: CanvasRenderingContext2D, ship: Ship): void {
   ctx.save();
   ctx.translate(ship.x, ship.y);
   ctx.rotate(ship.angle);
-  const nose = [0, -SHIP_SIZE];
-  const right = [SHIP_SIZE * 0.7, SHIP_SIZE * 0.7];
-  const left = [-SHIP_SIZE * 0.7, SHIP_SIZE * 0.7];
+  const nose: [number, number] = [0, -SHIP_SIZE];
+  const right: [number, number] = [SHIP_SIZE * 0.7, SHIP_SIZE * 0.7];
+  const left: [number, number] = [-SHIP_SIZE * 0.7, SHIP_SIZE * 0.7];
 
   // Main body
   ctx.beginPath();
-  ctx.moveTo(...nose);
-  ctx.lineTo(...right);
-  ctx.lineTo(...left);
+  ctx.moveTo(nose[0], nose[1]);
+  ctx.lineTo(right[0], right[1]);
+  ctx.lineTo(left[0], left[1]);
   ctx.closePath();
   // Gradient for metallic look
   const grad = ctx.createLinearGradient(0, -SHIP_SIZE, 0, SHIP_SIZE * 0.7);
@@ -102,13 +105,13 @@ export function drawShip(ctx, ship) {
 
   // Flame
   if (ship.accelerating) {
-    const flameLeft = [-SHIP_SIZE * 0.4, SHIP_SIZE * 0.7];
-    const flameTip = [0, SHIP_SIZE * 1.3];
-    const flameRight = [SHIP_SIZE * 0.4, SHIP_SIZE * 0.7];
+    const flameLeft: [number, number] = [-SHIP_SIZE * 0.4, SHIP_SIZE * 0.7];
+    const flameTip: [number, number] = [0, SHIP_SIZE * 1.3];
+    const flameRight: [number, number] = [SHIP_SIZE * 0.4, SHIP_SIZE * 0.7];
     ctx.beginPath();
-    ctx.moveTo(...flameLeft);
-    ctx.lineTo(...flameTip);
-    ctx.lineTo(...flameRight);
+    ctx.moveTo(flameLeft[0], flameLeft[1]);
+    ctx.lineTo(flameTip[0], flameTip[1]);
+    ctx.lineTo(flameRight[0], flameRight[1]);
     ctx.closePath();
     ctx.fillStyle = "orange";
     ctx.shadowColor = "#ffcc00";
@@ -122,17 +125,17 @@ export function drawShip(ctx, ship) {
   // Braking effect: blue reverse thrusters on all three points
   if (ship.braking) {
     // Helper to draw a braking cone at a given point and angle
-    function drawBrakingCone(x, y, angle) {
+    function drawBrakingCone(x: number, y: number, angle: number): void {
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(angle);
-      const brakeLeft = [-SHIP_SIZE * 0.18, 0];
-      const brakeTip = [0, -SHIP_SIZE * 0.35]; // Shorter cone
-      const brakeRight = [SHIP_SIZE * 0.18, 0];
+      const brakeLeft: [number, number] = [-SHIP_SIZE * 0.18, 0];
+      const brakeTip: [number, number] = [0, -SHIP_SIZE * 0.35]; // Shorter cone
+      const brakeRight: [number, number] = [SHIP_SIZE * 0.18, 0];
       ctx.beginPath();
-      ctx.moveTo(...brakeLeft);
-      ctx.lineTo(...brakeTip);
-      ctx.lineTo(...brakeRight);
+      ctx.moveTo(brakeLeft[0], brakeLeft[1]);
+      ctx.lineTo(brakeTip[0], brakeTip[1]);
+      ctx.lineTo(brakeRight[0], brakeRight[1]);
       ctx.closePath();
       ctx.fillStyle = "#33aaff";
       ctx.shadowColor = "#66ccff";
@@ -145,16 +148,16 @@ export function drawShip(ctx, ship) {
       ctx.stroke();
       ctx.restore();
     }
-    const nose = [0, -SHIP_SIZE];
-    const right = [SHIP_SIZE * 0.7, SHIP_SIZE * 0.7];
-    const left = [-SHIP_SIZE * 0.7, SHIP_SIZE * 0.7];
+    const nose: [number, number] = [0, -SHIP_SIZE];
+    const right: [number, number] = [SHIP_SIZE * 0.7, SHIP_SIZE * 0.7];
+    const left: [number, number] = [-SHIP_SIZE * 0.7, SHIP_SIZE * 0.7];
     // Outward direction is from center (0,0) to each point
-    function angleFromCenter([x, y]) {
+    function angleFromCenter([x, y]: [number, number]): number {
       return Math.atan2(y, x) + Math.PI / 2;
     }
-    drawBrakingCone(...nose, angleFromCenter(nose));
-    drawBrakingCone(...right, angleFromCenter(right));
-    drawBrakingCone(...left, angleFromCenter(left));
+    drawBrakingCone(nose[0], nose[1], angleFromCenter(nose));
+    drawBrakingCone(right[0], right[1], angleFromCenter(right));
+    drawBrakingCone(left[0], left[1], angleFromCenter(left));
   }
   ctx.restore();
 }

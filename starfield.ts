@@ -1,17 +1,19 @@
-// starfield.js
+// starfield.ts
 // Simple starfield background for the Asteroids game
 
 import { state } from "./state.js";
 import { wrapPosition } from "./utils.js";
 
-const STAR_COUNT = 100;
-const STAR_MIN_RADIUS = 0.5;
-const STAR_MAX_RADIUS = 1.5;
-const STAR_MIN_SPEED = 5; // px/sec
-const STAR_MAX_SPEED = 20; // px/sec
+const STAR_COUNT: number = 100;
+const STAR_MIN_RADIUS: number = 0.5;
+const STAR_MAX_RADIUS: number = 1.5;
+const STAR_MIN_SPEED: number = 5; // px/sec
+const STAR_MAX_SPEED: number = 20; // px/sec
 
-export function initStarfield() {
+export function initStarfield(): void {
   const { canvas } = state;
+  if (!canvas) return;
+  
   state.stars = [];
   for (let i = 0; i < STAR_COUNT; i++) {
     const radius =
@@ -28,8 +30,10 @@ export function initStarfield() {
   }
 }
 
-export function updateStarfield(delta) {
+export function updateStarfield(delta: number): void {
   const { stars, canvas } = state;
+  if (!stars || !canvas) return;
+  
   for (const star of stars) {
     star.y += star.speed * delta;
     wrapPosition(star, canvas.width, canvas.height);
@@ -40,11 +44,14 @@ export function updateStarfield(delta) {
   }
 }
 
-export function drawStarfield(ctx) {
+export function drawStarfield(ctx: CanvasRenderingContext2D): void {
+  const { stars } = state;
+  if (!stars) return;
+  
   ctx.save();
   ctx.fillStyle = "white";
   ctx.globalAlpha = 0.7;
-  for (const star of state.stars) {
+  for (const star of stars) {
     ctx.beginPath();
     ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
     ctx.fill();

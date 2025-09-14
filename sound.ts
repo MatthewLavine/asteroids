@@ -1,6 +1,8 @@
 // Simple sound manager for Asteroids
 // Audio must be used in a browser context, so this file is for browser use only.
-const sounds = {
+import { SoundName } from "./types.js";
+
+const sounds: Record<SoundName, HTMLAudioElement | null> = {
   laser1:
     typeof window !== "undefined"
       ? new window.Audio("sounds/laser1.wav")
@@ -15,19 +17,22 @@ const sounds = {
       : null,
 };
 
-let muted = false;
+let muted: boolean = false;
 
-function setMuted(value) {
+function setMuted(value: boolean): void {
   muted = value;
 }
 
-function playSound(name) {
+function playSound(name: SoundName): void {
   if (muted) return;
-  if (sounds[name]) {
+  const sound = sounds[name];
+  if (sound) {
     // Clone the audio to allow overlapping sounds
-    const sound = sounds[name].cloneNode();
-    sound.volume = 0.5;
-    sound.play();
+    const clonedSound = sound.cloneNode() as HTMLAudioElement;
+    clonedSound.volume = 0.5;
+    clonedSound.play().catch(() => {
+      // Ignore audio play errors (e.g., user hasn't interacted with page)
+    });
   }
 }
 

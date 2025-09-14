@@ -10,14 +10,15 @@ import {
 } from "./constants.js";
 import { wrapPosition } from "./utils.js";
 import { playSound } from "./sound.js";
+import { Asteroid, AsteroidShape } from "./types.js";
 
-function randomBetween(a, b) {
+function randomBetween(a: number, b: number): number {
   return Math.random() * (b - a) + a;
 }
 
-function generateAsteroidShape(size) {
+function generateAsteroidShape(size: number): AsteroidShape[] {
   // Generate a random, jagged polygon for a rocky look
-  const points = [];
+  const points: AsteroidShape[] = [];
   const numPoints = Math.floor(Math.random() * 6) + 8; // 8-13 points
   for (let i = 0; i < numPoints; i++) {
     const angle = (i / numPoints) * Math.PI * 2;
@@ -30,19 +31,20 @@ function generateAsteroidShape(size) {
   return points;
 }
 
-export function spawnAsteroids() {
+export function spawnAsteroids(): void {
+  const { canvas } = state;
+  if (!canvas) return;
+  
   state.asteroids = [];
   const SAFE_RADIUS = SHIP_SIZE / 2 + ASTEROID_MAX_SIZE + 40; // Add buffer
   for (let i = 0; i < ASTEROID_COUNT; i++) {
     const size = randomBetween(ASTEROID_MIN_SIZE, ASTEROID_MAX_SIZE);
     const angle = Math.random() * Math.PI * 2;
     const speed = randomBetween(ASTEROID_MIN_SPEED, ASTEROID_MAX_SPEED);
-    let x,
-      y,
-      attempts = 0;
+    let x: number, y: number, attempts = 0;
     do {
-      x = randomBetween(0, state.canvas.width);
-      y = randomBetween(0, state.canvas.height);
+      x = randomBetween(0, canvas.width);
+      y = randomBetween(0, canvas.height);
       attempts++;
       // Avoid infinite loop in rare cases
       if (attempts > 100) break;
@@ -60,27 +62,28 @@ export function spawnAsteroids() {
   }
 }
 
-function distance(x1, y1, x2, y2) {
+function distance(x1: number, y1: number, x2: number, y2: number): number {
   const dx = x1 - x2;
   const dy = y1 - y2;
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-const ASTEROID_RESPAWN_INTERVAL = 2.5; // seconds between spawns
-const ASTEROID_MAX_ON_SCREEN = ASTEROID_COUNT;
-let asteroidRespawnTimer = 0;
+const ASTEROID_RESPAWN_INTERVAL: number = 2.5; // seconds between spawns
+const ASTEROID_MAX_ON_SCREEN: number = ASTEROID_COUNT;
+let asteroidRespawnTimer: number = 0;
 
-export function spawnAsteroid() {
+export function spawnAsteroid(): void {
+  const { canvas } = state;
+  if (!canvas) return;
+  
   const SAFE_RADIUS = SHIP_SIZE / 2 + ASTEROID_MAX_SIZE + 40; // Add buffer
   const size = randomBetween(ASTEROID_MIN_SIZE, ASTEROID_MAX_SIZE);
   const angle = Math.random() * Math.PI * 2;
   const speed = randomBetween(ASTEROID_MIN_SPEED, ASTEROID_MAX_SPEED);
-  let x,
-    y,
-    attempts = 0;
+  let x: number, y: number, attempts = 0;
   do {
-    x = randomBetween(0, state.canvas.width);
-    y = randomBetween(0, state.canvas.height);
+    x = randomBetween(0, canvas.width);
+    y = randomBetween(0, canvas.height);
     attempts++;
     if (attempts > 100) break;
   } while (distance(x, y, state.ship.x, state.ship.y) < SAFE_RADIUS);
@@ -96,24 +99,27 @@ export function spawnAsteroid() {
   });
 }
 
-export function updateAsteroids(delta) {
-  for (const asteroid of state.asteroids) {
+export function updateAsteroids(delta: number): void {
+  const { asteroids, canvas } = state;
+  if (!canvas) return;
+  
+  for (const asteroid of asteroids) {
     asteroid.x += asteroid.velocityX * delta;
     asteroid.y += asteroid.velocityY * delta;
     asteroid.rotation += asteroid.rotationSpeed * delta;
-    wrapPosition(asteroid, state.canvas.width, state.canvas.height);
+    wrapPosition(asteroid, canvas.width, canvas.height);
   }
   // Asteroid respawn logic
   asteroidRespawnTimer += delta;
   if (asteroidRespawnTimer >= ASTEROID_RESPAWN_INTERVAL) {
     asteroidRespawnTimer = 0;
-    if (state.asteroids.length < ASTEROID_MAX_ON_SCREEN) {
+    if (asteroids.length < ASTEROID_MAX_ON_SCREEN) {
       spawnAsteroid();
     }
   }
 }
 
-export function drawAsteroids(ctx, asteroids) {
+export function drawAsteroids(ctx: CanvasRenderingContext2D, asteroids: Asteroid[]): void {
   ctx.save();
   for (const a of asteroids) {
     ctx.save();
@@ -148,7 +154,7 @@ export function drawAsteroids(ctx, asteroids) {
   ctx.restore();
 }
 
-export function checkLaserAsteroidCollisions() {
+export function checkLaserAsteroidCollisions(): void {
   const { lasers, asteroids } = state;
   for (let i = asteroids.length - 1; i >= 0; i--) {
     const a = asteroids[i];
@@ -186,7 +192,7 @@ export function checkLaserAsteroidCollisions() {
   }
 }
 
-export function checkShipAsteroidCollision() {
+export function checkShipAsteroidCollision(): boolean {
   const { ship, asteroids } = state;
   for (let i = 0; i < asteroids.length; i++) {
     const a = asteroids[i];

@@ -2,8 +2,9 @@ import { state } from "./state.js";
 import { SHIP_SIZE, LASER_SPEED, LASER_LIFESPAN } from "./constants.js";
 import { wrapPosition } from "./utils.js";
 import { playSound } from "./sound.js";
+import { Laser } from "./types.js";
 
-export function shootLaser(now) {
+export function shootLaser(now: number): void {
   const { ship, lasers } = state;
   const tipX = ship.x + Math.sin(ship.angle) * SHIP_SIZE;
   const tipY = ship.y - Math.cos(ship.angle) * SHIP_SIZE;
@@ -18,8 +19,10 @@ export function shootLaser(now) {
   playSound("laser1");
 }
 
-export function updateLasers(now, delta) {
+export function updateLasers(now: number, delta: number): void {
   const { lasers, canvas } = state;
+  if (!canvas) return;
+  
   for (let i = lasers.length - 1; i >= 0; i--) {
     const l = lasers[i];
     l.x += l.vx * delta;
@@ -31,7 +34,7 @@ export function updateLasers(now, delta) {
   }
 }
 
-export function drawLasers(ctx, lasers) {
+export function drawLasers(ctx: CanvasRenderingContext2D, lasers: Laser[]): void {
   ctx.save();
   for (const l of lasers) {
     const age = performance.now() - l.createdAt;

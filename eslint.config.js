@@ -1,10 +1,18 @@
-// ESLint configuration for your Asteroids project
+// ESLint configuration for your Asteroids TypeScript project
+import js from "@eslint/js";
+import tseslint from "@typescript-eslint/eslint-plugin";
+import tsparser from "@typescript-eslint/parser";
+
 export default [
+  js.configs.recommended,
   {
-    ignores: ["node_modules/**", "dist/**", ".env"],
+    files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
-      ecmaVersion: 2021,
-      sourceType: "module",
+      parser: tsparser,
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: "module",
+      },
       globals: {
         window: "readonly",
         document: "readonly",
@@ -12,14 +20,18 @@ export default [
         requestAnimationFrame: "readonly",
       },
     },
-    linterOptions: {
-      reportUnusedDisableDirectives: true,
+    plugins: {
+      "@typescript-eslint": tseslint,
     },
     rules: {
-      "no-unused-vars": "warn",
-      "no-undef": "error",
+      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-non-null-assertion": "warn",
       semi: ["error", "always"],
       quotes: ["error", "double"],
     },
+  },
+  {
+    ignores: ["node_modules/**", "dist/**", ".env"],
   },
 ];

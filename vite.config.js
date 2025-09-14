@@ -16,4 +16,10 @@ export default defineConfig({
       input: "index.html",
     },
   },
+  esbuild: {
+    target: "ES2020"
+  },
+  resolve: {
+    extensions: ['.ts', '.js']
+  }
 });
